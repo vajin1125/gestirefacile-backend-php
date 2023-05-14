@@ -16,6 +16,8 @@ if (!empty($_POST))
 	$name = mysqli_real_escape_string($con, trim($_POST['name']));
 	$surname = mysqli_real_escape_string($con, trim($_POST['surname']));
 	$descr = mysqli_real_escape_string($con, trim($_POST['descr']));
+    $servicePropertyNote = mysqli_real_escape_string($con, trim($_POST['servicePropertyNote']));
+
 	if ($_POST['available'] == 'true') {
 		$available = 1;
 	}
@@ -55,6 +57,7 @@ if (!empty($_POST))
 	}
 	$tel = mysqli_real_escape_string($con, trim($_POST['tel']));
 	$cell = mysqli_real_escape_string($con, trim($_POST['cell']));
+	$address = mysqli_real_escape_string($con, trim($_POST['address']));
 	$gender = mysqli_real_escape_string($con, trim($_POST['gender']));
 	if ($_POST['own_car'] == 'true') {
 		$own_car = 1;
@@ -167,8 +170,8 @@ if (!empty($_POST))
 	}
 	
 	
-	$sql = "INSERT INTO `resources` (`oid`,`oid_resource_type`,`oid_user`,`code`,`name`, `surname`, `descr`, `available`, `avail_qta`, `image`, `email`,`tel`,`cell`,`gender`,`own_car`,`note`,`oid_user_res`,`width`,`height`,`deep`,`weight`,`position`,`capacity`,`consumable`) VALUES ('{$oid}', {$oid_resource_type}, {$oid_user},
-	'{$code}','{$name}','{$surname}', '{$descr}', {$available}, {$avail_qta}, '{$image}',{$email},'{$tel}','{$cell}', '{$gender}', {$own_car},'{$note}', NULL, {$width}, {$height}, {$deep}, {$weight}, '{$position}', '{$capacity}', {$consumable} )";
+	$sql = "INSERT INTO `resources` (`oid`,`oid_resource_type`,`oid_user`,`code`,`name`, `surname`, `descr`, `available`, `avail_qta`, `image`, `email`,`tel`,`cell`, `address`, `gender`,`own_car`,`note`,`oid_user_res`,`width`,`height`,`deep`,`weight`,`position`,`capacity`,`consumable`,`servicePropertyNote`) VALUES ('{$oid}', {$oid_resource_type}, {$oid_user},
+	'{$code}','{$name}','{$surname}', '{$descr}', {$available}, {$avail_qta}, '{$image}',{$email},'{$tel}','{$cell}', '{$address}', '{$gender}', {$own_car},'{$note}', NULL, {$width}, {$height}, {$deep}, {$weight}, '{$position}', '{$capacity}', {$consumable}, '{$servicePropertyNote}' )";
 	if(mysqli_query($con,$sql))
 	{
 		if ($oid_resource_type == 2 && $avail_qta && $avail_qta > 0) { //MATERIALE INSERIMENTO IN MAGAZZINO

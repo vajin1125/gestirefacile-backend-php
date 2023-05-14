@@ -6,7 +6,7 @@ require '../config/security.php';
 if (!empty($_POST)) 
 {
 
-	$oid = mysqli_real_escape_string($con, trim($_POST['oid']));
+	$oid = $_POST['oid'];
 
 	
 	$sql = "DELETE FROM resource_resources_assoc where oid_resource =  '{$oid}'";
@@ -54,7 +54,7 @@ if (!empty($_POST))
 		
 	}
 	
-	$sql = "DELETE FROM resources where oid =  '{$oid}'";
+	$sql = "DELETE FROM resources WHERE `oid`='{$oid}'";
 	if (mysqli_query($con,$sql)) {
 		
 	}

@@ -16,7 +16,7 @@ if (!empty($_POST))
 	$piva = mysqli_real_escape_string($con, trim($_POST['piva']));
 	$oid_user = $currentUser['oid'];
 	
-	$sql = "SELECT max(oid)+1 as id from customers ";
+	$sql = "SELECT max(oid)+1 AS id FROM customers ";
 	
 	if($result = mysqli_query($con,$sql)) {
 		if ($row = mysqli_fetch_row($result))  {
@@ -29,41 +29,52 @@ if (!empty($_POST))
 	if ($oid == NULL) {
 		$oid = 0;
 	}
+
+    $sql = "SELECT max(oid_customer_by_user)+1 AS id_customer_by_user FROM customers WHERE oid_user={$oid_user}";
 	
+	if($result = mysqli_query($con,$sql)) {
+		if ($row = mysqli_fetch_row($result))  {
+			$oid_customer_by_user = $row[0];
+		}
+		else {
+			http_response_code(500);
+		}
+	}
+	if ($oid_customer_by_user == NULL) {
+		$oid_customer_by_user = 1;
+	}
 	
-	$sql = "INSERT INTO `customers` (`oid`, `oid_user`, `name`, `surname`, `email`, `address`, `desc`, `tel`, `cell`, `piva`) VALUES ('{$oid}','{$oid_user}', '{$name}','{$surname}', '{$email}','{$address}', '{$desc}', '{$tel}', '{$cell}','{$piva}')";
-	if(mysqli_query($con,$sql))
-	{
+	$sql = "INSERT INTO `customers` (`oid`, `oid_user`, `oid_customer_by_user`, `name`, `surname`, `email`, `address`, `desc`, `tel`, `cell`, `piva`) VALUES ('{$oid}','{$oid_user}', '{$oid_customer_by_user}', '{$name}','{$surname}', '{$email}','{$address}', '{$desc}', '{$tel}', '{$cell}','{$piva}')";
+
+	if(mysqli_query($con,$sql)) {
 		if ($_POST['circle_customer_assoc']) {
 			$customerassoc = json_decode($_POST['circle_customer_assoc']);
 			$_POST['circle_customer_assoc'] = $customerassoc;
-			foreach ($customerassoc as $value)
-			{
-			   
-			   $sql = "SELECT max(oid)+1 as id from `circle_customer_assoc` ";
-	
-			    if($result = mysqli_query($con,$sql)) {
+			foreach ($customerassoc as $value) {
+            
+                $sql = "SELECT max(oid)+1 AS id FROM `circle_customer_assoc` ";
+
+                if($result = mysqli_query($con,$sql)) {
 					if ($row = mysqli_fetch_row($result))  {
 						$oidCustomerAssoc = $row[0];
 					}
 					else {
 						http_response_code(500);
 					}
-			    }
+                }
+
 				if ($oidCustomerAssoc == NULL) {
 					$oidCustomerAssoc = 0;
 				}
 				
-			   
-			   $sql = "INSERT INTO `circle_customer_assoc` (`oid`,`oid_circle`,`oid_customer`) VALUES ('{$oidCustomerAssoc}', '{$value->circle->oid}', '{$oid}')";
-			   if(mysqli_query($con,$sql))
-			   {
+                $sql = "INSERT INTO `circle_customer_assoc` (`oid`,`oid_circle`,`oid_customer`) VALUES ('{$oidCustomerAssoc}', '{$value->circle->oid}', '{$oid}')";
+                
+                if(mysqli_query($con,$sql)) {
 				//OK
-			   }
-			   else {
+                } else {
 					echo("Error description: " . mysqli_error($con));
 					http_response_code(422);
-			   }
+                }
 			}
 		}
 		
@@ -75,17 +86,18 @@ if (!empty($_POST))
 				if ($value->value == '') {
 					continue;
 				}
-			   
-			    $sql = "SELECT max(oid)+1 as id from `customer_attribute` ";
-	
-			    if($result = mysqli_query($con,$sql)) {
+                
+                $sql = "SELECT max(oid)+1 as id from `customer_attribute` ";
+                
+                if($result = mysqli_query($con,$sql)) {
 					if ($row = mysqli_fetch_row($result))  {
 						$oidAttributeAssoc = $row[0];
 					}
 					else {
 						http_response_code(500);
 					}
-			    }
+                }
+
 				if ($oidAttributeAssoc == NULL) {
 					$oidAttributeAssoc = 0;
 				}
@@ -94,19 +106,15 @@ if (!empty($_POST))
 				if (isset($value->oid)) {
 					$oidAttribute = $value->oid;
 				}
-				
-				
-				
-			   
-			    $sql = "INSERT INTO `customer_attribute` (`oid`,`oid_customer`,`oid_attribute`,`name`,`value`) VALUES ({$oidAttributeAssoc}, {$oid}, {$oidAttribute},'{$value->name}', '{$value->value}')";
-			    if(mysqli_query($con,$sql))
-			    {
+                
+                $sql = "INSERT INTO `customer_attribute` (`oid`,`oid_customer`,`oid_attribute`,`name`,`value`) VALUES ({$oidAttributeAssoc}, {$oid}, {$oidAttribute},'{$value->name}', '{$value->value}')";
+
+                if(mysqli_query($con,$sql)) {
 				 //OK
-			    }
-			    else {
+                } else {
 					echo("Error description: " . mysqli_error($con));
 					http_response_code(422);
-			    }
+                }
 			}
 		}
 		
@@ -116,9 +124,7 @@ if (!empty($_POST))
 		$_POST['oid'] = $oid;
 		//echo json_encode($request);
 		echo json_encode($_POST);
-	}
-	else
-	{
+	} else {
 		echo("Error description: " . mysqli_error($con));
 		http_response_code(422);
 	}

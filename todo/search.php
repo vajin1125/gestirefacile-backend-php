@@ -16,6 +16,8 @@ if(isset($_GET['oid'])) {
 			$newArr[] = $db_field;
 		}
 		$con->close();
+    // var_dump($newArr);
+
 		echo json_encode($newArr);
 
 	}
@@ -30,8 +32,8 @@ else {
 			$newArr[] = $db_field;
 		}
 		$con->close();
+    // var_dump($newArr);
 		echo json_encode($newArr);
-
 	}
 }
 

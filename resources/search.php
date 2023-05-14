@@ -35,14 +35,16 @@ if(isset($_GET['oid'])) {
 		}
 		
 
-		$sql = "SELECT oid, oid_resource_assoc, qta FROM resource_resources_assoc where oid_resource='{$oid}'";
+		$sql = "SELECT oid, oid_resource_assoc, qta, address, refNumber FROM resource_resources_assoc where oid_resource='{$oid}'";
 		$resources_assoc = array();
 		$idx = 0;
 		if($result = mysqli_query($con,$sql)) {
 			while ($row = mysqli_fetch_row($result))  {
 				$oidAssoc = $row[0];
 				$oidResourceAssoc = $row[1];
-				$qta = $row[2];	
+				$qta = $row[2];
+        $address = $row[3];
+        $refNumber = $row[4];
 				
 				$sqlb = "SELECT * FROM resources where oid='{$oidResourceAssoc}'";
 				
@@ -51,6 +53,8 @@ if(isset($_GET['oid'])) {
 						$resources_assoc[$idx]['oid'] = $oidAssoc;
 						$resources_assoc[$idx]['resourceAssoc'] = $db_field_b;
 						$resources_assoc[$idx]['qta'] = $qta;
+            $resources_assoc[$idx]['address'] = $address;
+            $resources_assoc[$idx]['refNumber'] = $refNumber;
 					}
 					else {
 						http_response_code(500);
@@ -134,6 +138,23 @@ if(isset($_GET['oid'])) {
 			}
 		}
 		$newArr[0]['prices'] = $prices;
+
+    $sqlEvent = "
+        SELECT *, customers.name as clientName, customers.surname as clientSurname, customers.address as clientAddress, events.address as eventAddress
+        FROM event_detail 
+        LEFT JOIN events ON event_detail.oid_event=events.oid 
+        LEFT JOIN customers ON events.oid_customer=customers.oid 
+        WHERE event_detail.oid_resource='{$oid}'
+        ";
+        $events = array();
+        $idx_event = 0;
+        if($resultEvent = mysqli_query($con, $sqlEvent)) {
+            while($db_field_Event = mysqli_fetch_assoc($resultEvent)) {
+            $events[$idx_event] = $db_field_Event;
+            $idx_event = $idx_event + 1;
+            }
+        }
+        $newArr[0]['events'] = $events;
 		
 		
 		$con->close();
@@ -142,7 +163,11 @@ if(isset($_GET['oid'])) {
 	}
 }
 else {
-	$sql = "SELECT * FROM resources where oid_user={$oid_user}  order by oid desc";
+    if (isset($_GET['trashed'])) {
+        $sql = "SELECT * FROM resources where oid_user={$oid_user} and is_trash=1 order by oid desc";
+    } else {
+        $sql = "SELECT * FROM resources where oid_user={$oid_user} and is_trash=0 order by oid desc";
+    }
 
 	if($result = mysqli_query($con,$sql))
 	{
@@ -159,14 +184,16 @@ else {
 				}
 			}
 
-			$sqlR = "SELECT oid, oid_resource_assoc, qta FROM resource_resources_assoc where oid_resource='{$oidResource}'";
+			$sqlR = "SELECT oid, oid_resource_assoc, qta, address, refNumber FROM resource_resources_assoc where oid_resource='{$oidResource}'";
 			$resources_assoc = array();
 			$idxR = 0;
 			if($resultR = mysqli_query($con,$sqlR)) {
 				while ($row = mysqli_fetch_row($resultR))  {
 					$oidAssoc = $row[0];
 					$oidResourceAssoc = $row[1];
-					$qta = $row[2];	
+					$qta = $row[2];
+          $address = $row[3];
+          $refNumber = $row[4];
 					
 					$sqlb = "SELECT * FROM resources where oid='{$oidResourceAssoc}'";
 					
@@ -175,6 +202,8 @@ else {
 							$resources_assoc[$idxR]['oid'] = $oidAssoc;
 							$resources_assoc[$idxR]['resourceAssoc'] = $db_field_b;
 							$resources_assoc[$idxR]['qta'] = $qta;
+              $resources_assoc[$idx]['address'] = $address;
+              $resources_assoc[$idx]['refNumber'] = $refNumber;
 						}
 						else {
 							http_response_code(500);
@@ -248,7 +277,17 @@ else {
 			$newArr[$idx]['prices'] = $prices;
 
       // get event count and event list
-      $sqlEvent = "SELECT * FROM event_detail LEFT JOIN events ON event_detail.oid_event=events.oid where event_detail.oid_resource='{$oidResource}'";
+      // $sqlEvent = "SELECT *, customers.name as clientName, customers.address as clientAddress, event_detail.address as eventAddress, events.from as eventFrom, events.to as eventTo FROM event_detail 
+      //   LEFT JOIN events ON event_detail.oid_event=events.oid 
+      //   LEFT JOIN customers ON events.oid_customer=customers.oid 
+      //   where event_detail.oid_resource='{$oidResource}'";
+      $sqlEvent = "
+      SELECT *, customers.name as clientName, customers.surname as clientSurname, customers.address as clientAddress, events.address as eventAddress
+      FROM event_detail 
+      LEFT JOIN events ON event_detail.oid_event=events.oid 
+      LEFT JOIN customers ON events.oid_customer=customers.oid 
+      WHERE event_detail.oid_resource='{$oidResource}'
+      ";
       $events = array();
       $idx_event = 0;
       if($resultEvent = mysqli_query($con, $sqlEvent)) {
@@ -258,6 +297,8 @@ else {
         }
       }
       $newArr[$idx]['events'] = $events;
+
+
 
 			$idx  = $idx  + 1;
 		}
