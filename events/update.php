@@ -451,8 +451,8 @@ if(!empty($_POST))
 		}
 		
 		
-		$con->close();
-		echo json_encode(json_decode($_POST));
+		$con->close();;
+		echo json_encode($_POST);
 	}
 	else
 	{

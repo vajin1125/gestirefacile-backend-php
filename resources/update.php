@@ -19,6 +19,8 @@ if (!empty($_POST))
 	$name = mysqli_real_escape_string($con, trim($_POST['name']));
 	$surname = mysqli_real_escape_string($con, trim($_POST['surname']));
 	$descr = mysqli_real_escape_string($con, trim($_POST['descr']));
+  $servicePropertyNote = mysqli_real_escape_string($con, trim($_POST['servicePropertyNote']));
+
 	if ($_POST['available'] == 'true') {
 		$available = 1;
 	}
@@ -57,6 +59,7 @@ if (!empty($_POST))
 	}
 	$tel = mysqli_real_escape_string($con, trim($_POST['tel']));
 	$cell = mysqli_real_escape_string($con, trim($_POST['cell']));
+    $address = mysqli_real_escape_string($con, trim($_POST['address']));
 	$gender = mysqli_real_escape_string($con, trim($_POST['gender']));
 	if ($_POST['own_car'] == 'true') {
 		$own_car = 1;
@@ -155,7 +158,7 @@ if (!empty($_POST))
 	
 	
 	
-	$sqlUpd = "UPDATE resources SET `code`= '{$code}',`name`= '{$name}', `surname`= '{$surname}', `descr`= '{$descr}', `available`= {$available}, `avail_qta`= {$avail_qta}, `image`= '{$image}', `email`= {$email},`tel`= '{$tel}',`cell`= '{$cell}',`gender`= '{$gender}',`own_car`= {$own_car},`note`= '{$note}',`width`= {$width},`height`= {$height},`deep`= {$deep},`weight`= {$weight},`position`= '{$position}',`capacity`= '{$capacity}',`consumable`= {$consumable} where oid={$oid}";
+	$sqlUpd = "UPDATE resources SET `code`= '{$code}',`name`= '{$name}', `surname`= '{$surname}', `descr`= '{$descr}', `available`= {$available}, `avail_qta`= {$avail_qta}, `image`= '{$image}', `email`= {$email},`tel`= '{$tel}',`cell`= '{$cell}', `address`= '{$address}', `gender`= '{$gender}',`own_car`= {$own_car},`note`= '{$note}',`width`= {$width},`height`= {$height},`deep`= {$deep},`weight`= {$weight},`position`= '{$position}',`capacity`= '{$capacity}',`consumable`= {$consumable}, `servicePropertyNote`='{$servicePropertyNote}' where oid={$oid}";
 	
 	if(mysqli_query($con,$sqlUpd))
 	{
@@ -181,7 +184,7 @@ if (!empty($_POST))
 				}
 				
 			   
-			   $sql = "INSERT INTO `resource_resources_assoc` (`oid`,`oid_resource`,`oid_resource_assoc`,`qta`) VALUES ('{$oidResourceAssoc}', '{$oid}', '{$value->resourceAssoc->oid}', {$value->qta})";
+			   $sql = "INSERT INTO `resource_resources_assoc` (`oid`,`oid_resource`,`oid_resource_assoc`,`qta`,`address`,`refNumber`) VALUES ('{$oidResourceAssoc}', '{$oid}', '{$value->resourceAssoc->oid}', {$value->qta}, '{$value->address}', '{$value->refNumber}')";
 			   if(mysqli_query($con,$sql))
 			   {
 				//OK

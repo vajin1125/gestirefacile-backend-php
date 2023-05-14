@@ -20,15 +20,18 @@ if(isset($postdata) && !empty($postdata))
 	$reason = mysqli_real_escape_string($con, trim($request->reason));
 	
 	
-	$sqlBus = "select oid_business from role_user_assoc where oid_user= {$oid_user}";
+	$sqlBus = "SELECT oid_business FROM role_user_assoc WHERE oid_user='{$oid_user}'";
 	if($resultBus = mysqli_query($con,$sqlBus)) {
 		if ($rowBus = mysqli_fetch_row($resultBus))  {
+            // var_dump($rowBus[0]);
 			$oid_business = $rowBus[0];
-			$sqlMag = "select oid from warehouse where oid_business={$oid_business}";
+			// $sqlMag = "SELECT oid FROM warehouse WHERE oid_business='{$oid_business}'";
+            $oid_business_str = implode(',', $rowBus);
+			$sqlMag = "SELECT oid FROM warehouse WHERE oid_business IN ({$oid_business_str})";
 			if($resultMag = mysqli_query($con,$sqlMag)) {
 				if ($rowMag = mysqli_fetch_row($resultMag))  {
 					$oidMag = $rowMag[0];
-					$sqlMov = "SELECT max(oid)+1 as id from warehouse_movements ";
+					$sqlMov = "SELECT max(oid)+1 AS id FROM warehouse_movements";
 
 					if($resultMov = mysqli_query($con,$sqlMov)) {
 						if ($rowMov = mysqli_fetch_row($resultMov))  {
@@ -49,12 +52,12 @@ if(isset($postdata) && !empty($postdata))
 						$oid_type_movement = 2;
 					}
 					
-					$sqlInsMag = "INSERT INTO `warehouse_movements` (`oid`, `oid_event`, `oid_warehouse`, `oid_user_operation`, `oid_resource`, `oid_type_movement`, `qta`, `reason`, `date_ts`) VALUES ({$oidMov}, NULL, {$oidMag}, {$oid_user}, {$oid_resource}, {$oid_type_movement}, {$qta}, '{$reason}', now())";
+					$sqlInsMag = "INSERT INTO `warehouse_movements` (`oid`, `oid_event`, `oid_warehouse`, `oid_user_operation`, `oid_resource`, `oid_type_movement`, `qta`, `reason`, `date_ts`) VALUES ({$oidMov}, NULL, {$oidMag}, {$oid_user}, {$oid_resource}, {$oid_type_movement}, {$qta}, '{$reason}', NOW())";
 					if(mysqli_query($con,$sqlInsMag))
 					{
 						
 						
-						$sqlUpdRes = "UPDATE resources set avail_qta = avail_qta + ({$qta}) where oid = {$oid_resource}";
+						$sqlUpdRes = "UPDATE resources SET avail_qta = avail_qta + ({$qta}) WHERE oid = '{$oid_resource}'";
 						if(mysqli_query($con,$sqlUpdRes)) 
 						{
 							//UPDATE RESOURCE OK

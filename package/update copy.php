@@ -98,16 +98,16 @@ if (!empty($_POST))
 		}
 		
 		$sql = "DELETE FROM package_detail where oid_package =  {$oid} and is_extra=1";
-    $extraDetails = json_decode($_POST['extra_details']);
-		if (mysqli_query($con,$sql) && $extraDetails) {
-			foreach ($extraDetails as $extra_value)
+    $packageDetails = json_decode($_POST['package_details']);
+		if (mysqli_query($con,$sql) && $packageDetails) {
+			foreach ($packageDetails as $value)
 			{
-				$extra_price = mysqli_real_escape_string($con, trim($extra_value->price));
-				if (substr_count($extra_price, ".") >=1 && substr_count($extra_price, ",") == 1) {
-					$extra_price = str_replace(".", "", $extra_price);
-					$extra_price = str_replace(",", ".", $extra_price);
-				} else if (substr_count($extra_price, ".") ==0 && substr_count($extra_price, ",") == 1) {
-					$extra_price = str_replace(",", ".", $extra_price);
+				$price = mysqli_real_escape_string($con, trim($value->price));
+				if (substr_count($price, ".") >=1 && substr_count($price, ",") == 1) {
+					$price = str_replace(".", "", $price);
+					$price = str_replace(",", ".", $price);
+				} else if (substr_count($price, ".") ==0 && substr_count($price, ",") == 1) {
+					$price = str_replace(",", ".", $price);
 				}
 				$sql = "SELECT max(oid)+1 as id from `package_detail` ";
 				if($result = mysqli_query($con,$sql)) {
@@ -121,8 +121,8 @@ if (!empty($_POST))
 				if ($oidPackageDetail == NULL) {
 					$oidPackageDetail = 0;
 				}
-				$extra_descr = strtolower(trim($extra_value->extra_descr));
-				$sql = "INSERT INTO `package_detail` (`oid`,`oid_package`,`oid_resource_type`,`oid_category`,`oid_skill`,`oid_resource`,`qta`,`price`,`extra_descr`,`is_extra`,`note`,`hours`,`days`,`total_price`) VALUES ({$oidPackageDetail}, {$oid}, NULL, NULL, NULL, NULL, {$extra_value->qta}, {$extra_price},'{$extra_descr}', 1,'{$extra_value->note}',NULL, NULL, {$extra_value->total_price})";
+				$extra_descr = strtolower(trim($value->extra_descr));
+				$sql = "INSERT INTO `package_detail` (`oid`,`oid_package`,`oid_resource_type`,`oid_category`,`oid_skill`,`oid_resource`,`qta`,`price`,`extra_descr`,`is_extra`,`note`,`hours`,`days`,`total_price`) VALUES ({$oidPackageDetail}, {$oid}, NULL, NULL, NULL, NULL, {$value->qta}, {$price},'{$extra_descr}', 1,'{$value->note}',NULL, NULL, {$value->total_price})";
 
 				if(mysqli_query($con,$sql))
 			    {

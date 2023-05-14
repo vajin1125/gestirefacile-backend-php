@@ -576,8 +576,11 @@ if(isset($_GET['oid'])) {
 	}
 }
 else {
-	
-	$sql = "SELECT * FROM events e where oid_business in (select oid_business from role_user_assoc where oid_user={$oid_user} and oid_role in (select oid from roles where acronym in ('MANAGER','EDITOR'))) order by  e.from asc";
+    if (isset($_GET['trashed'])) {
+        $sql = "SELECT * FROM events e where is_trash=1 and oid_business in (select oid_business from role_user_assoc where oid_user={$oid_user} and oid_role in (select oid from roles where acronym in ('MANAGER','EDITOR'))) order by  e.from DESC";
+    } else {
+        $sql = "SELECT * FROM events e where is_trash=0 and oid_business in (select oid_business from role_user_assoc where oid_user={$oid_user} and oid_role in (select oid from roles where acronym in ('MANAGER','EDITOR'))) order by  e.from DESC";
+    }
 
 	if($result = mysqli_query($con,$sql))
 	{
