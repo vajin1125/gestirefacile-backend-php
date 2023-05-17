@@ -45,6 +45,9 @@ if ($data)
     
     if (mysqli_query($con, $sql))
     {
+        $insertedId = mysqli_insert_id($con);
+        $data['id'] = $insertedId;
+        // var_dump($insertedId);
         echo json_encode($data);
     }
     else
