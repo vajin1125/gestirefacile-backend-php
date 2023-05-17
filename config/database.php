@@ -1,15 +1,15 @@
 <?php
 // specify your own database credentials
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'Sql1513497_1');
+// define('DB_HOST', 'localhost');
+// define('DB_USER', 'root');
+// define('DB_PASS', '');
+// define('DB_NAME', 'Sql1513497_1');
 
 // specify your own database credentials
-// define('DB_HOST', '31.11.39.32');
-// define('DB_USER', 'Sql1513497');
-// define('DB_PASS', 'z8lb8r0070');
-// define('DB_NAME', 'Sql1513497_1');
+define('DB_HOST', '31.11.39.32');
+define('DB_USER', 'Sql1513497');
+define('DB_PASS', 'z8lb8r0070');
+define('DB_NAME', 'Sql1513497_1');
 
 // get the database connection
 function connect()
